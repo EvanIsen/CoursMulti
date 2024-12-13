@@ -1,5 +1,4 @@
 using System;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -12,22 +11,22 @@ using UnityEngine.UI;
 public class ChatManager : MonoBehaviour
 {
     public TMP_InputField messageInput;
-    public TMP_Text chatDisplay;
+    public TMP_Text chatDisplay, playerDisplay;
     public Button sendButton;
     private ClientWebSocket _webSocket;
-    private const string  _serverUri = "ws://192.168.217.159:8080";
+    private const string  _serverUrl = "ws://192.168.104.189:8080";
 
     async void Start()
     {
         _webSocket = new ClientWebSocket();
-
+        
         try
         {
-            Debug.Log("Connecting to the server : " + _serverUri);
-            await _webSocket.ConnectAsync(new Uri(_serverUri), CancellationToken.None);
-            Debug.Log("Connected to server : " + _serverUri);
+            Debug.Log("Connecting to the server : " + _serverUrl);
+            await _webSocket.ConnectAsync(new Uri(_serverUrl), CancellationToken.None);
+            Debug.Log("Connected to server : " + _serverUrl);
 
-            _ = ReceiveMessages();
+            _ = ReceiveMessages(); // Start a listener
         }
         catch (Exception e)
         {
@@ -38,7 +37,9 @@ public class ChatManager : MonoBehaviour
         sendButton.onClick.AddListener((() => SendMessageToServer(messageInput.text)));
     }
 
-    private async void onApplicationQuit()
+
+
+    private async void OnApplicationQuit()
     {
         if (_webSocket != null && _webSocket.State == WebSocketState.Open)
         {
@@ -88,4 +89,6 @@ public class ChatManager : MonoBehaviour
                 
             }
     }
+    
+    
 }
